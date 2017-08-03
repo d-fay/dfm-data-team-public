@@ -1,5 +1,6 @@
 import os
 import gzip
+import shutil
 import codecs
 import csv
 import petl as etl
@@ -17,8 +18,8 @@ def unzip_csv_file():
     file_in = gzip.open(fullpath + '.csv.gz', 'r')
     file_contents = csv.reader(file_in)
 
-    file_out = codecs.open(fullpath + '.csv', 'w')
-    writer = csv.writer(file_out)
+    file_out_csv = codecs.open(fullpath + '.csv', 'w')
+    writer = csv.writer(file_out_csv)
 
     # REMOVE COMMAS AND '%' SYMBOLS FROM WITHIN CSV VALUES
     for line in file_contents:
@@ -27,7 +28,10 @@ def unzip_csv_file():
         writer.writerow(line)
 
     file_in.close()
-    file_out.close()
+    file_out_csv.close()
+
+    with open(fullpath + '.csv', 'rb') as f_in, gzip.open(fullpath + '_clean.csv.gz', 'wb') as f_out:
+        shutil.copyfileobj(f_in, f_out)
 
 
 def extract_table_from_csv():
